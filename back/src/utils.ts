@@ -1,0 +1,62 @@
+import { Request } from "express";
+import imageminPngquant from 'imagemin-pngquant';
+import imageminMozjpeg from 'imagemin-mozjpeg';
+import imageminGifsicle from 'imagemin-gifsicle';
+import imageminWebp from 'imagemin-webp';
+import imagemin, { type Plugin } from 'imagemin';
+import playerRepo from './repository/players.repository';
+const path = require('path');
+const fs = require('fs');
+
+
+export const getAuthUser = (request: Request) : string => {
+    return JSON.parse(request.headers.authorization!).sub;
+}
+
+
+export const compressImage = async (imageType:string, imageName:string) => {
+    const imageDir = path.join(__dirname, "images");
+    const imagePath = path.join(imageDir, `${imageName}${imageType}`);
+    const compressedImagePath = path.join(imageDir, `compressed`);
+    try{
+        let plugins:Plugin[] = [];
+        switch(imageType.replace(".", "")){
+            case "png":
+                plugins = [imageminPngquant({quality: [0.6, 0.7]})];
+                break;
+            case "jpeg":
+                plugins = [imageminMozjpeg({quality: 70})];
+                break;
+            case "gif":
+                plugins = [imageminGifsicle ({interlaced: true, optimizationLevel: 3})];
+                break;
+            case "webp":
+                plugins = [imageminWebp({quality: 70})];
+                break;
+        }
+        console.log("Compressing image");
+        const res = await imagemin([imagePath], {
+            plugins,
+            destination: compressedImagePath,
+            glob: false
+        });
+        console.log("Compressed image")
+    }
+    catch(err){
+        console.error("Error compressing image, saving original");
+        fs.copyFileSync(imagePath, path.join(compressedImagePath, `${imageName}${imageType}`));
+    }
+    finally{
+        await playerRepo.setCompressedImage(imageName, imageType);
+        fs.unlinkSync(imagePath);
+        {
+            const files = fs.readdirSync(compressedImagePath);
+            const toRemove = files.filter((file: string) => file.startsWith(`${imageName}.`));
+            toRemove.forEach((file: any) => {
+                if(file !== `${imageName}${imageType}`){
+                    fs.unlinkSync(path.join(compressedImagePath, file));
+                }
+            });
+        }
+    }
+}

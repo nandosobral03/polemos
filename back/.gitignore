@@ -1,0 +1,5 @@
+database.db
+src/images/compressed/*
+node_modules
+dist
+.env
