@@ -5,10 +5,9 @@ import { v4 as uuid } from "uuid";
 const getTeams = async (userid: string) => {
     const db = await init();
     const teams = await db.all(`
-        SELECT teams.id AS id, teams.name AS name, sponsors.name AS sponsor
-        FROM teams, sponsors
-        WHERE teams.sponsor = sponsors.id
-        AND teams.user_id = ?
+        SELECT teams.id AS id, teams.name AS name, teams.sponsor AS sponsor
+        FROM teams
+        WHERE teams.user_id = ?
     `, [userid]);
 
     for (let team of teams) {
@@ -30,16 +29,17 @@ const createTeam = async (userid: string, team:Team) => {
         INSERT INTO teams (id, user_id, name, sponsor)
         VALUES (?, ?, ?, ?)
     `, [id, userid, team.name, team.sponsor]);
-
+    const players: {id:string, name:string}[] = [];
     for (let player of team.players) {
         const playerId = uuid();
+        players.push({ id: playerId, name: player.name })
         await db.run(`
             INSERT INTO players (id, team_id, name, image)
             VALUES (?, ?, ?, ?)
         `, [playerId, id, player.name, `${process.env.URL}/static/default.png`]);
     }
 
-    return { id, name: team.name}
+    return { id, name: team.name, players};
 }
 
 const deleteTeam = async (userid: string, id: string) => {

@@ -22,9 +22,10 @@
       flex-grow: 1;
       padding: 16px;
       border-radius: 8px;
-      background-color: var(--background-color-light);
+      background-image: linear-gradient(225deg, var(--background-color), var(--background-color-light) 50%, var(--background-color) 50%, var(--background-color-light));
       margin: 16px;
       color: var(--text-color);
+      overflow-y: auto;
     }
 </style>
 

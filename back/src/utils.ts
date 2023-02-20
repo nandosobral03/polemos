@@ -13,6 +13,14 @@ export const getAuthUser = (request: Request) : string => {
     return JSON.parse(request.headers.authorization!).sub;
 }
 
+export const formatHttpError = (err: any) => {
+    let status = 500;
+    let message = "Internal server error";
+    if(err.message) message = err.message;
+    if(err.status) status = err.status;
+    return {status, message};
+}
+
 
 export const compressImage = async (imageType:string, imageName:string) => {
     const imageDir = path.join(__dirname, "images");

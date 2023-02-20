@@ -1,27 +1,40 @@
 import { Request, Response } from 'express';
-import { compressImage } from '../utils';
+import { compressImage, formatHttpError } from '../utils';
 import repo from '../repository/players.repository';
 import path from 'path';
 import fs from 'fs';
 
 
 export const addPlayer = async (req: Request, res: Response) => {
+    try{
     const { teamId } = req.params;
     const  sponsor = await repo.addPlayer(teamId, req.body);
     res.status(200).json({
         message: "Player added",
         sponsor
     });
+    }
+    catch(err){
+        const error = formatHttpError(err);
+        res.status(error.status).send(error.message);
+    }
 }
 
 export const deletePlayer = async (req: Request, res: Response) => {
+    try{
     await repo.deletePlayer(req.params.id);
     res.status(200).json({
         message: "Player deleted",
     });
+    }
+    catch(err){
+        const error = formatHttpError(err);
+        res.status(error.status).send(error.message);
+    }
 }
 
 export const updatePlayerImage = async (req: Request, res: Response) => {
+    try{
     let { id } = req.params;
     if(!req.files){
         throw {
@@ -47,11 +60,22 @@ export const updatePlayerImage = async (req: Request, res: Response) => {
     res.status(200).json({
         message: "Player image updated",
     });
+    }
+    catch(err){
+        const error = formatHttpError(err);
+        res.status(error.status).send(error.message);
+    }
 }
 
 export const updatePlayer = async (req: Request, res: Response) => {
+    try{
     await repo.updatePlayer(req.params.id, req.body);
     res.status(200).json({
         message: "Player updated",
     });
+    }
+    catch(err){
+        const error = formatHttpError(err);
+        res.status(error.status).send(error.message);
+    }
 }
