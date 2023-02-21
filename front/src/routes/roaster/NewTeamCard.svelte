@@ -161,15 +161,21 @@
 	.card {
 		background-color: var(--background-color);
 		padding: 16px;
-		width: 70%;
-		max-width: 1200px;
+		width: 90%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: center;
 		border-radius: 8px;
-		border: 1px solid var(--highlight-color);
+		box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
+		transition: background-color 0.2s ease-in-out;
+		&:hover{
+			background-color: var(--background-color-light);
+		}
 
-		gap: 10px;
+
+		gap: 32px;
+		height: 300px;
 		.card-header {
 			width: 100%;
 			display: flex;
@@ -187,6 +193,9 @@
 			.sponsor {
 				font-size: 16px;
 				width: fit-content;
+				background-color: var(--red-color);
+				padding: 8px;
+				border-radius: 8px;
 				select {
 					width: 100%;
 					font-size: inherit;
@@ -222,7 +231,7 @@
 			display: flex;
 			flex-direction: row;
 			flex-wrap: wrap;
-			justify-content: center;
+			justify-content: space-around;
 			gap: 8px;
 
 			.player {
@@ -258,6 +267,7 @@
 		background-color: transparent;
 		color: var(--text-color);
 		text-align: inherit;
+		width: 100%;
 	}
 
 	.actions {

@@ -33,28 +33,50 @@
 
 <style lang="scss">
     .teams{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 30px;
-        flex-grow: 1;
+        display: grid;
+        // 2 columns of 50% width
+        grid-template-columns: 50% 50%;
+        grid-gap: 16px;
+        padding: 16px;
         overflow-y: auto;
+        overflow-x: hidden;
+        place-items: center;
+        
+    }
+
+    @media only screen and (max-width: 1200px) {
+        .teams{
+            grid-template-columns: 100%;
+        }
     }
 
     button{
         background-color: var(--background-color);
-        border: 1px solid var(--highlight-color);
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-size: 24px;
-        font-weight: 500;
+		padding: 16px;
+		width: 90%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
+
+        border: none;
+        box-sizing: content-box;
         color: var(--highlight-color);
+        font-size: 32px;
+        height: 300px;
+        
+        transition: background-color 0.2s ease-in-out;
+
+
         cursor: pointer;
         &:hover{
             background-color: var(--highlight-color);
             color: var(--background-color);
         }
+
+
     }
 
 </style>

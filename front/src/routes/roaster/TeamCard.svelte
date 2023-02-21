@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Sponsor, Team } from '$lib/models/team';
 	import teamStore from '$lib/stores/team.store';
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	export let sponsors: Sponsor[];
 	export let team: Team;
 	let editing = false;
@@ -93,7 +93,7 @@
 		{#if !editing}
 			<div class="card-header">
 				<span class="sponsor">
-					Sponsored by {sponsors.find((sponsor) => sponsor.id === team.sponsor)?.name}
+					{sponsors.find((sponsor) => sponsor.id === team.sponsor)?.name}
 				</span>
 				<span class="name">
 					{team.name}
@@ -162,15 +162,22 @@
 	.card {
 		background-color: var(--background-color);
 		padding: 16px;
-		width: 70%;
-		max-width: 1200px;
+		width: 90%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: center;
 		border-radius: 8px;
-		border: 1px solid var(--highlight-color);
+		box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
+		transition: background-color 0.2s ease-in-out;
+		&:hover{
+			background-color: var(--background-color-light);
+		}
 
-		gap: 10px;
+
+		user-select: none;
+		gap: 32px;
+		height: 300px;
 		.card-header {
 			width: 100%;
 			display: flex;
@@ -183,11 +190,16 @@
 			text-align: center;
 			.name {
 				flex-grow: 1;
+				color: var(--red-color);
+				font-weight: 300;
 			}
 
 			.sponsor {
 				font-size: 16px;
 				width: fit-content;
+				background-color: var(--red-color);
+				padding: 8px;
+				border-radius: 8px;
 				select {
 					width: 100%;
 					font-size: inherit;
@@ -223,7 +235,7 @@
 			display: flex;
 			flex-direction: row;
 			flex-wrap: wrap;
-			justify-content: center;
+			justify-content: space-around;
 			gap: 8px;
 
 			.player {
@@ -247,6 +259,11 @@
 				.player-name {
 					font-size: 16px;
 					font-weight: 500;
+					width: 100%;
+					text-overflow: ellipsis;
+					overflow: hidden;
+					white-space: nowrap;
+
 				}
 			}
 		}
@@ -259,6 +276,7 @@
 		background-color: transparent;
 		color: var(--text-color);
 		text-align: inherit;
+		width: 100%;
 	}
 
 	.actions {

@@ -1,17 +1,10 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from "svelte";
-    const dispatch = createEventDispatcher();
+    import { onMount } from "svelte";
     let active = 'roaster'
-    const handleChange = (e: string) => {
-        dispatch(
-            'change',
-            {
-                route: e
-            }
-        )   
-        
-        window.location.href = `/${e}`
-    }
+    const routes = [
+        {name: 'Roaster', path: '/roaster'},
+        {name: 'Play', path: '/play'}
+    ]
 
     onMount(() => {
         const path = window.location.pathname.split('/')[1]
@@ -21,25 +14,30 @@
 </script>
 
 <div class="sidebar">
-    <div class="title"> Gurises Games</div>
-    <div class="sidebar-item" class:active={active === 'roaster'} on:click={
-      () =>  handleChange('roaster') 
-    } on:keydown={e => e.key === 'Enter' && handleChange('roaster')}>Roaster</div>
-     <div class="sidebar-item" class:active={active === 'play'} on:click={
-        () =>  handleChange('play')
-      } on:keydown={e => e.key === 'Enter' && handleChange('play')}>Play</div>
+    <div class="title"  on:click={() => window.location.href = '/'} on:keydown={()=> window.location.href = '/'}>Polemos</div>
+      {#each routes as route}
+        <div class="sidebar-item" on:click={() =>  window.location.href = route.path} class:active={active === route.name.toLowerCase()} on:keydown={() =>  window.location.href = route.path}>
+            {route.name}
+        </div>
+      {/each}
 </div>
 
-<style>
+<style lang="scss">
     .title{
-        font-size: 1.5em;
+        font-size: 2em;
         margin: 16px 0px;
+        font-weight: 900;
+        user-select: none;
+        display: flex;
+        justify-content: center;
+        cursor: pointer;
     }
     .sidebar{
         color: var(--text-color);
         width: 10%;
         min-width: 200px;
-        background-color : var(--background-color-light);
+        background-image: linear-gradient(225deg, var(--background-color), var(--background-color-light) 50%, var(--background-color) 50%, var(--background-color-light));
+
         padding: 16px;
         gap: 8px;
         display: flex;
