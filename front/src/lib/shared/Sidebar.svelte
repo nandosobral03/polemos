@@ -1,9 +1,10 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    let active = 'roaster'
+    let active:string;
     const routes = [
-        {name: 'Roaster', path: '/roaster'},
-        {name: 'Play', path: '/play'}
+        {name: 'Teams', path: '/teams'},
+        {name: 'Events', path: '/events'},
+        {name: 'Play', path: '/play'},
     ]
 
     onMount(() => {
@@ -14,7 +15,6 @@
 </script>
 
 <div class="sidebar">
-    <div class="title"  on:click={() => window.location.href = '/'} on:keydown={()=> window.location.href = '/'}>Polemos</div>
       {#each routes as route}
         <div class="sidebar-item" on:click={() =>  window.location.href = route.path} class:active={active === route.name.toLowerCase()} on:keydown={() =>  window.location.href = route.path}>
             {route.name}
@@ -37,7 +37,6 @@
         width: 10%;
         min-width: 200px;
         background-image: linear-gradient(225deg, var(--background-color), var(--background-color-light) 50%, var(--background-color) 50%, var(--background-color-light));
-
         padding: 16px;
         gap: 8px;
         display: flex;
@@ -54,6 +53,8 @@
         cursor: pointer;
         border-radius: 8px;
         transition: all 0.2s ease-in-out;
+        height: 16px;
+        line-height: 16px;
     }
 
     .sidebar-item:hover{

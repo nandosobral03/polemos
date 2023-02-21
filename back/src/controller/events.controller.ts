@@ -13,10 +13,21 @@ export const createEvent = async (req: Request, res: Response) => {
   }
 };
 
-export const getEvents = async (req: Request, res: Response) => {
+export const getEventById = async (req: Request, res: Response) => {
   try {
     const user = getAuthUser(req);
-    const events = await repo.getEvents(user);
+    const event = await repo.getEventById(user, req.params.id);
+    res.status(200).json(event);
+  } catch (err) {
+    const error = formatHttpError(err);
+  }
+};
+
+export const getEvents = async (req: Request, res: Response) => {
+  try {
+    const fullDetails = req.query.fullDetails === "true";
+    const user = getAuthUser(req);
+    const events = await repo.getEvents(user, fullDetails);
     res.status(200).json(events);
   } catch (err) {
     const error = formatHttpError(err);

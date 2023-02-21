@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-	import type { PageServerData } from "./$types";
+	import type { PageServerData } from "../teams/$types";
 	import TeamCard from "./TeamCard.svelte";
     import NewTeamCard from "./NewTeamCard.svelte";
 
@@ -44,7 +44,7 @@
         
     }
 
-    @media only screen and (max-width: 1200px) {
+    @media only screen and (max-width: 1400px) {
         .teams{
             grid-template-columns: 100%;
         }

@@ -14,7 +14,7 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        font-size: 10rem;
+        font-size: clamp(5rem, 10vw, 10rem);
         background: linear-gradient(225deg, var(--primary-color), var(--primary-color) 50%, var(--highlight-color) 50%, var(--highlight-color));
         -webkit-background-clip: text;
         background-clip: text;
