@@ -104,7 +104,7 @@ const getDay = async (userId:string, gameId:string, day:string) =>{
 
 const runGame = (players:(Player & { team_id: string })[], events:Event[], statuses:Status[]) => {
     let allPlayers = players.map(
-        player => ({ ...player, health: 100, alive: true, kills: 0, status: 'normal', id: player.id!})
+        player => ({ ...player, health: 100, alive: true, kills: 0, status: '1', id: player.id!})
     )
     const allEvents = events.slice();
     const days = [];
@@ -241,4 +241,50 @@ const shuffleArray = (array:any[]) => {
     }
   }
 
-export default { startGame, getDay }
+
+
+const getGames = async ( userId: string ) => {
+    const db = await init();
+    const games = await db.all('SELECT * FROM games WHERE user_id = ?', userId);
+    return games;
+}
+
+const getGameInfo = async ( gameId: string, userId: string ) => {
+    const db = await init();
+    console.log(gameId, userId)
+    const gameInfo = await db.get(`
+        SELECT 
+            *
+        FROM  games
+        WHERE id = ? AND user_id = ?`, gameId, userId);
+
+    if(!gameInfo) throw new Error('Game not found');
+
+    const dayInfo = [];
+    let prevDead = 0;
+    for(let i = 0; i < gameInfo.days; i++){
+        const eventCount = await db.get(`
+            SELECT
+                COUNT(*) as count
+            FROM game_day_events
+            WHERE game_id = ? AND game_day_number = ?`, gameId, i+1);
+
+        const deathCount = await db.get(`
+            SELECT
+                deaths
+            FROM game_days
+            WHERE game_id = ? AND number = ?`, gameId, i+1);
+
+        let dead = JSON.parse(deathCount.deaths);
+        dayInfo.push({ events: eventCount.count , dead: dead.length - prevDead, number: i+1 });
+        prevDead = dead.length;
+    }
+    return {
+        ...gameInfo,
+        days: dayInfo,
+    }
+
+
+}
+
+export default { startGame, getDay, getGames, getGameInfo }

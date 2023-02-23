@@ -23,3 +23,27 @@ export const getDay = async (req: Request, res: Response) => {
     res.status(error.status).send(error.message);
   }
 };
+
+
+export const getGames = async (req: Request, res: Response) => {
+  try {
+    const user = getAuthUser(req);
+    const games = await repo.getGames(user);
+    res.status(200).json(games);
+  } catch (err) {
+    const error = formatHttpError(err);
+    res.status(error.status).send(error.message);
+  }
+}
+
+export const getGameInfo = async (req: Request, res: Response) => {
+  try{
+    const user = getAuthUser(req);
+    console.log(req.params.id);
+    const game = await repo.getGameInfo(req.params.id, user);
+    res.status(200).json(game);
+  } catch (err) {
+    const error = formatHttpError(err);
+    res.status(error.status).send(error.message);
+  }
+}
