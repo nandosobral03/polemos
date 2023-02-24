@@ -17,9 +17,19 @@ const createEvent = async (userid: string, event: Event) => {
     };
 }
 
-const getEvents = async (userid: string, fullDetails: boolean, type?: string) => {
+const getEvents = async (userid: string, fullDetails: boolean, gameid?: string, day?: number, type?: string) => {
     const db = await init();
     let select = 'id, attacker_count, victim_count, event_type, direct_damage, reflected_damage, description'
+    if(gameid && day) {
+        const events = await db.all(`
+        SELECT events.id, attacker_count, victim_count, event_type, direct_damage, reflected_damage, description, status_odds, victim_status
+        FROM events
+        INNER JOIN game_day_events ON events.id = game_day_events.event_id
+        WHERE user_id = ? AND game_id = ? AND game_day_number = ?
+        `, [userid, gameid, day]);
+        return events;
+    }
+    
     if (fullDetails) {
         select = 'id, attacker_count, victim_count, event_type, direct_damage, reflected_damage, description, victim_status, status_odds'
     }

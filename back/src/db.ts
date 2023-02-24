@@ -116,6 +116,7 @@ export const runMigrations = async () => {
         user_id TEXT NOT NULL,
         days INTEGER NOT NULL,
         winner TEXT NOT NULL,
+        summary TEXT,
         FOREIGN KEY (user_id) REFERENCES users (id))
     `)
 

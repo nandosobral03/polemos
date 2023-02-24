@@ -8,6 +8,10 @@
         window.location.href = `/games/${data.game.id}/${day}`;
     }
 
+    const gotoSummary = () => {
+        window.location.href = `/games/${data.game.id}/summary`;
+    }
+
 </script>
 
 <div class="day-list">
@@ -19,7 +23,9 @@
             </div>
         </div>
     {/each}
-
+    <div on:click={() => gotoSummary()}  on:keydown={(e) => e.key === "Enter" && gotoSummary()} >
+        <span class="day">Summary</span>
+    </div>
 </div>
 
 

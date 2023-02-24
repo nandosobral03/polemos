@@ -12,7 +12,7 @@ export async function load({params}:{params: {id: string, dayId: string}}) {
     const token = await login();
     const [day, events, teams, status, game] = await Promise.all([
         getDay(params.id, params.dayId, token),
-        getEvents(token),
+        getEvents(token, params.id, params.dayId),
         getTeams(token),
         getStatuses(token),
         getGameInfo(params.id, token)
@@ -50,11 +50,15 @@ const getDay = async (id: string, dayId: string, token: string) : Promise<DayInf
     return data;
 }
 
-const getEvents = async (token:string) : Promise<Event[]> =>{
+const getEvents = async (token:string,gameId:string, dayId:string) : Promise<Event[]> => {
     const {data} = await axios.get(`${url}/events`,{
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": `${token}`
+            "Authorization": `${token}`,
+        },
+        params: {
+            gameId: gameId,
+            dayNumber: dayId
         }
     });
     return data;

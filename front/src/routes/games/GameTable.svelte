@@ -1,19 +1,19 @@
 <script lang="ts">
-    import type { Event } from "$lib/models/event";
+    import type { Game } from "$lib/models/game";
 	import TableArrow from "../../lib/shared/TableArrow.svelte";
-    export let events:Event[];
+    export let games:Game[];
     let currentSort = '';
     let currentDirection:'desc'|'asc' = 'desc';
     const sortBy = (key:string) => {
         if(currentSort === key) {
-            events = events.reverse();
+            games = games.reverse();
             currentDirection = currentDirection === 'asc' ? 'desc' : 'asc';
             return;
         }else{
             currentDirection = 'desc';
         }
         currentSort = key;
-        events = events.sort((a,b) => {
+        games = games.sort((a,b) => {
                 if((a as any)[key] > (b as any)[key]) return -1;
                 if((a as any)[key] < (b as any)[key]) return 1;
                 return 0;
@@ -25,31 +25,19 @@
 <table>
     <thead>
         <tr>
-            <th class:active = {currentSort == "attacker_count"} on:click={() => sortBy("attacker_count")}>  <span> #Attacker        <TableArrow direction={currentDirection}  active={currentSort == "attacker_count" } /></span>   </th>
-            <th class:active = {currentSort == "victim_count"} on:click={() => sortBy("victim_count")}>    <span> #Victim          <TableArrow direction={currentDirection}  active={currentSort == "victim_count" } />  </span> </th>
-            <th class:active = {currentSort == "description"} on:click={() => sortBy("description")}>     <span> Description      <TableArrow direction={currentDirection}  active={currentSort == "description" } /> </span>  </th>
-            <th class:active = {currentSort == "direct_damage"} on:click={() => sortBy("direct_damage")}>   <span> Direct Damage    <TableArrow direction={currentDirection}  active={currentSort == "direct_damage" } /> </span>  </th>
-            <th class:active = {currentSort == "reflected_damage"} on:click={() => sortBy("reflected_damage")}><span> Reflected Damage <TableArrow direction={currentDirection}  active={currentSort == "reflected_damage" } /> </span>  </th>
-            <th class:active = {currentSort == "event_type"} on:click={() => sortBy("event_type")}>      <span> Event Type       <TableArrow direction={currentDirection}  active={currentSort == "event_type" } /> </span>  </th>
+            <th class:active = {currentSort == "days"} on:click={() => sortBy("days")}>  <span> Days        <TableArrow direction={currentDirection}  active={currentSort == "days" } /></span>   </th>
+            <th class:active = {currentSort == "date"} on:click={() => sortBy("date")}>      <span> Date       <TableArrow direction={currentDirection}  active={currentSort == "date" } /> </span>  </th>
         </tr>
     </thead>
     <tbody>
-        {#each events as event}
-            <tr on:click={() => window.location.href = `/events/${event.id}`} on:keydown={(e) => { if(e.key === 'Enter') window.location.href = `/events/${event.id}`}}>
-                <td>{event.attacker_count}</td>
-                <td>{event.victim_count}</td>
-                <td>{event.description}</td>
-                <td>{event.direct_damage}</td>
-                <td>{event.reflected_damage}</td>
-                <td>{event.event_type}</td>
+        {#each games as game}
+            <tr on:click={() => window.location.href = `/games/${game.id}`} on:keydown={(e) => { if(e.key === 'Enter') window.location.href = `/games/${game.id}`}}>
+                <td>{game.days} {game.days == 1 ? 'day' : 'days'}</td>
+                <td>{new Date(game.date).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false })}</td>
             </tr>
         {/each}
     </tbody>
 </table>
-<button class="add" on:click={() => window.location.href = `/events/new`}>
-    <span class="material-symbols-outlined">add</span>
-</button>
-
 
 <style lang="scss">
     *{

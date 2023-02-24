@@ -39,9 +39,30 @@ export const getGames = async (req: Request, res: Response) => {
 export const getGameInfo = async (req: Request, res: Response) => {
   try{
     const user = getAuthUser(req);
-    console.log(req.params.id);
     const game = await repo.getGameInfo(req.params.id, user);
     res.status(200).json(game);
+  } catch (err) {
+    const error = formatHttpError(err);
+    res.status(error.status).send(error.message);
+  }
+}
+
+export const getGameSummary = async (req: Request, res: Response) => {
+  try{
+    const user = getAuthUser(req);
+    const summary = await repo.getGameSummary(req.params.id,user);
+    res.status(200).json(summary);
+  } catch (err) {
+    const error = formatHttpError(err);
+    res.status(error.status).send(error.message);
+  }
+}
+
+export const getPlayerStory = async (req: Request, res: Response) => {
+  try{
+    const user = getAuthUser(req);
+    const story = await repo.getPlayerStory(req.params.id, req.params.playerId, user);
+    res.status(200).json(story);
   } catch (err) {
     const error = formatHttpError(err);
     res.status(error.status).send(error.message);

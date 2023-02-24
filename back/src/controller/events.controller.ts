@@ -26,8 +26,10 @@ export const getEventById = async (req: Request, res: Response) => {
 export const getEvents = async (req: Request, res: Response) => {
   try {
     const fullDetails = req.query.fullDetails === "true";
+    const gameId = req.query.gameId ? req.query.gameId.toString() : undefined;
+    const dayNumber = req.query.dayNumber ? parseInt(req.query.dayNumber.toString()) : undefined;
     const user = getAuthUser(req);
-    const events = await repo.getEvents(user, fullDetails);
+    const events = await repo.getEvents(user, fullDetails, gameId, dayNumber);
     res.status(200).json(events);
   } catch (err) {
     const error = formatHttpError(err);

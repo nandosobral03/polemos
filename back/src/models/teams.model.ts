@@ -44,7 +44,6 @@ export const teamStructure = {
 
 export interface GamePlayer extends Player {
     health: number;
-    alive: boolean;
     kills: number;
     status: string;
     id: string;

@@ -17,18 +17,49 @@ const startGame = async (userId:string) =>{
     const events = (await db.all(`SELECT * FROM events WHERE user_id = ?`, [userId]))
     const statuses = (await db.all(`SELECT * FROM status WHERE user_id = ?`, [userId]))
     const {days, all} = runGame(players, events, statuses);
-    for(let i = 0; i < days.length; i++) {
-        await db.run(`INSERT INTO game_days (game_id, number,current_players,deaths) VALUES (?, ?, ?, ?)`, [id, i+1, JSON.stringify(days[i].current_players), JSON.stringify(days[i].dead)]);
-        for(let event of days[i].events) {
-            await db.run(`INSERT INTO game_day_events (game_id, game_day_number, event_id, players) VALUES (?, ?, ?, ?)`, [id, i+1, event.id, JSON.stringify(event.players)]);
+    console.log("Finished running game")
+
+    let firstDay = days[0];
+    const rest = days.slice(1);
+    
+    await db.run(`INSERT INTO game_days (game_id, number,current_players,deaths) VALUES (?, ?, ?, ?)`, [id, 1, JSON.stringify(firstDay.current_players), JSON.stringify(firstDay.dead)]);
+    await Promise.all(firstDay.events.map(
+        async (event:any) => {
+            await db.run(`INSERT INTO game_day_events (game_id, game_day_number, event_id, players) VALUES (?, ?, ?, ?)`, [id, 1, event.id, JSON.stringify(event.players)]);
         }
-    }   
-    await db.run(`UPDATE games SET days = ?, winner = ? WHERE id = ?`, [days.length, days[days.length-1].alive[0] || "No one", id]);
+    ))
+
+
+  
     setTimeout(
         async () => {
-            await recordStats(userId, days.length, all || []);
+            await Promise.all(rest.map(
+                async (day:any, i:number) => {
+                    await db.run(`INSERT INTO game_days (game_id, number,current_players,deaths) VALUES (?, ?, ?, ?)`, [id, i+2, JSON.stringify(day.current_players), JSON.stringify(day.dead)]);
+                    await Promise.all(day.events.map(   
+                        async (event:any) => {
+                            await db.run(`INSERT INTO game_day_events (game_id, game_day_number, event_id, players) VALUES (?, ?, ?, ?)`, [id, i+2, event.id, JSON.stringify(event.players)]);
+                        }
+                    ))
+                }
+            ))
+            console.log("Finished inserting days")
+        }, 0
+    )
+    
+    
+    setTimeout(
+        async () => {
+            await recordStats(userId, days.length, JSON.parse(JSON.stringify(all)) || []);
         }, 1000
     )
+    const summariedPlayers = all?.map((player:any) => {return{
+        id: player.id,
+        name: player.name,
+        kills: player.kills,
+    }})
+
+    await db.run(`UPDATE games SET days = ?, winner = ?, summary = ? WHERE id = ?`, [days.length, days[days.length-1].alive[0] || "No one", JSON.stringify(summariedPlayers), id]);
     return {
         id,
         days: days.length,
@@ -104,7 +135,7 @@ const getDay = async (userId:string, gameId:string, day:string) =>{
 
 const runGame = (players:(Player & { team_id: string })[], events:Event[], statuses:Status[]) => {
     let allPlayers = players.map(
-        player => ({ ...player, health: 100, alive: true, kills: 0, status: '1', id: player.id!})
+        player => ({ ...player, health: 100,  kills: 0, status: '1', id: player.id!})
     )
     const allEvents = events.slice();
     const days = [];
@@ -114,7 +145,7 @@ const runGame = (players:(Player & { team_id: string })[], events:Event[], statu
         days.push({
             current_players: day.all.map(player => 
                 {
-                    const {image, alive, kills,name,team_id, ...rest} = player
+                    const {image, kills,name,team_id, ...rest} = player
                     return rest;
                 }
             ).filter(p => p.previousHealth > 0),
@@ -143,16 +174,17 @@ const runDay = (_all:(GamePlayer &  { team_id:string })[], _events:Event[] , _st
         if(!event) break;
         const playerCount = event?.attacker_count + event?.victim_count;
         if(notPlayed.length < playerCount) continue;
-        const players = notPlayed.splice(0, playerCount);
-        const atk = players.splice(0, event.attacker_count);
-        const def = players.splice(0, event.victim_count);
-        if(friendlyFire(atk, def)){
-            notPlayed.push(...atk, ...def);
-            if(++event.retries == 1){
-                break;
-            }
-            continue;
-        } 
+            const players = notPlayed.splice(0, playerCount);
+            const atk = players.splice(0, event.attacker_count);
+            const def = players.splice(0, event.victim_count);
+            if(friendlyFire(atk, def)){
+                notPlayed.push(...atk, ...def);
+                if(++event.retries > 3){
+                    break;
+                }
+                events.push(event);
+                continue;
+            } 
         const eventPlayers = [...atk, ...def].map(p => p.id);
         runEvent(event, atk, def, all, _statuses);
         playedEvents.push({id: event.id, players: eventPlayers});
@@ -218,8 +250,6 @@ const dealDamage = (player:GamePlayer, event:Event, statuses:Status[], direct = 
     }
 }
 
-
-
 const friendlyFire = (atk: {id: string, team_id: string}[], def: {id: string, team_id: string}[]) => {
     for(let a of atk){
         for(let d of def){
@@ -245,16 +275,25 @@ const shuffleArray = (array:any[]) => {
 
 const getGames = async ( userId: string ) => {
     const db = await init();
-    const games = await db.all('SELECT * FROM games WHERE user_id = ?', userId);
+    const games = await db.all(`SELECT 
+        id,
+        date,
+        days,
+        winner,
+        user_id
+    FROM games WHERE user_id = ?`, userId);
     return games;
 }
 
 const getGameInfo = async ( gameId: string, userId: string ) => {
     const db = await init();
-    console.log(gameId, userId)
     const gameInfo = await db.get(`
         SELECT 
-            *
+            id,
+            date,
+            days,
+            winner,
+            user_id
         FROM  games
         WHERE id = ? AND user_id = ?`, gameId, userId);
 
@@ -287,4 +326,39 @@ const getGameInfo = async ( gameId: string, userId: string ) => {
 
 }
 
-export default { startGame, getDay, getGames, getGameInfo }
+
+const getGameSummary = async ( gameId: string, userId: string ) => {
+    const db = await init();
+    const gameInfo = await db.get(`
+        SELECT
+            *
+        FROM  games
+        WHERE id = ? AND user_id = ?`, gameId, userId);
+    gameInfo.summary = JSON.parse(gameInfo.summary);
+    return gameInfo;
+}
+
+
+const getPlayerStory = async ( gameId: string, playerId: string, userId:string ) => {
+    const db = await init();
+    const gameInfo = await db.all(`
+        SELECT
+            e.*, ge.players, gd.number
+        FROM game_day_events ge
+        JOIN game_days gd ON gd.game_id = ge.game_id AND gd.number = ge.game_day_number
+        JOIN games g ON g.id = ge.game_id
+        JOIN events e ON e.id = ge.event_id
+        WHERE g.id = ?
+        AND g.user_id = ?
+        AND ge.players LIKE ?`, gameId, userId, `%${playerId}%`);
+
+    gameInfo.forEach(event => {
+        event.players = JSON.parse(event.players);
+    });
+
+    return gameInfo;
+
+}
+
+
+export default { startGame, getDay, getGames, getGameInfo, getGameSummary, getPlayerStory }

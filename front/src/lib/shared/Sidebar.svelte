@@ -5,6 +5,7 @@
         {name: 'Teams', path: '/teams'},
         {name: 'Events', path: '/events'},
         {name: 'Play', path: '/play'},
+        {name: 'Games', path: '/games'},
     ]
 
     onMount(() => {
