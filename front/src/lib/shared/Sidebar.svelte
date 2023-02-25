@@ -3,6 +3,7 @@
     let active:string;
     const routes = [
         {name: 'Teams', path: '/teams'},
+        {name: 'Players', path: '/players'},
         {name: 'Events', path: '/events'},
         {name: 'Play', path: '/play'},
         {name: 'Games', path: '/games'},

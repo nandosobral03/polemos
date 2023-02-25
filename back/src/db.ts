@@ -29,7 +29,7 @@ export const runMigrations = async () => {
         name TEXT NOT NULL,
         sponsor TEXT NOT NULL,
         user_id TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id),
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
         FOREIGN KEY (sponsor) REFERENCES sponsors (id))
     `)
 
@@ -37,14 +37,18 @@ export const runMigrations = async () => {
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         image TEXT NOT NULL,
-        team_id TEXT NOT NULL,
-        FOREIGN KEY (team_id) REFERENCES teams (id)
+        team_id TEXT,
+        status TEXT NOT NULL,   
+        user_id TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (team_id) REFERENCES teams (id) ON DELETE SET NULL
     )`)
 
     await db.exec(`CREATE TABLE IF NOT EXISTS sponsors (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
-        user_id TEXT NOT NULL)
+        user_id TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE)
     `)
 
     await db.exec(`CREATE TABLE IF NOT EXISTS player_stats (
@@ -54,18 +58,16 @@ export const runMigrations = async () => {
         total_wins INTEGER NOT NULL,
         total_deaths INTEGER NOT NULL,
         FOREIGN KEY (player_id) REFERENCES players (id),
-        FOREIGN KEY (user_id) REFERENCES users (id)
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         PRIMARY KEY (player_id, user_id)
     )`)
-
-
 
     await db.exec(`CREATE TABLE IF NOT EXISTS global_stats (
         id TEXT PRIMARY KEY,
         type TEXT NOT NULL,
         value INTEGER NOT NULL,
         user_id TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id)
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
     )`)
 
     // Insert default global stats
@@ -85,7 +87,7 @@ export const runMigrations = async () => {
         damage_reduction INTEGER NOT NULL,
         health_increase INTEGER NOT NULL,
         user_id TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id)
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
     )`)
 
     await db.exec(`
@@ -103,9 +105,9 @@ export const runMigrations = async () => {
         reflected_damage INTEGER NOT NULL,
         description TEXT NOT NULL,
         victim_status TEXT NOT NULL,    
-        user_id TEXT NOT NULL,
         status_odds INTEGER NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id)
+        user_id TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         FOREIGN KEY (victim_status) REFERENCES status (id))
     `)
 
@@ -117,7 +119,7 @@ export const runMigrations = async () => {
         days INTEGER NOT NULL,
         winner TEXT NOT NULL,
         summary TEXT,
-        FOREIGN KEY (user_id) REFERENCES users (id))
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE)
     `)
 
     await db.exec(`CREATE TABLE IF NOT EXISTS game_days(

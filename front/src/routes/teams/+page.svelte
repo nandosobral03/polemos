@@ -15,7 +15,11 @@
     <div class="teams">
         {#key changed}
             {#each data.roaster as team}
-                <TeamCard {team} sponsors={data.sponsors} />
+                <TeamCard {team} sponsors={data.sponsors} on:deleted={() => {
+                    data.roaster = data.roaster.filter((t) => t.id !== team.id)
+                    changed = !changed;
+                    }}
+                />
             {/each}
         {/key}
         

@@ -1,33 +1,17 @@
 <script lang="ts">
 	import type { Sponsor, Team } from '$lib/models/team';
 	import teamStore from '$lib/stores/team.store';
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	export let sponsors: Sponsor[];
 	export let team: Team;
 	let editing = false;
 	let oldTeam: Team;
-	let files: (FileList | null)[] = [null, null, null, null];
-	let uploaders: (HTMLElement | null)[] = [null, null, null, null];
 	let deleted = false;
 	onMount(() => {
 		oldTeam = JSON.parse(JSON.stringify(team));
 	});
 
-	function handleImageUpload(e: Event, idx: number) {
-		const target = e.target as HTMLInputElement;
-		const file = target.files![0];
-		const reader = new FileReader();
-		reader.onload = (e) => {
-			const result = e.target?.result as string;
-			team.players[idx].image = result;
-		};
-		reader.readAsDataURL(file);
-	}
-
-	function handleImageClick(idx: number) {
-		const target = uploaders[idx];
-		target?.click();
-	}
+	const dispatch = createEventDispatcher();
 
 	const discard = () => {
 		team = oldTeam;
@@ -37,58 +21,16 @@
 	const save = async () => {
 		editing = false;
 		await teamStore.update(team);
-		for (let player, i = 0; (player = team.players[i]); i++) {
-			if (player.name !== oldTeam.players[i].name) {
-				await teamStore.updatePlayer(player);
-			}
-
-			if (player.image?.startsWith('data:image')) {
-				let fileList = files[i];
-				await teamStore.updatePlayerImage(player.id!, fileList![0]);
-			}
-		}
 	};
 
 	const remove = async () => {
 		await teamStore.remove(team.id);
 		deleted = true;
+		dispatch('deleted', team);
 	};
 </script>
 
 {#if !deleted}
-	<input
-		type="file"
-		accept="image/*"
-		bind:files={files[0]}
-		on:change={(e) => handleImageUpload(e, 0)}
-		style="display: none;"
-		bind:this={uploaders[0]}
-	/>
-	<input
-		type="file"
-		accept="image/*"
-		bind:files={files[1]}
-		on:change={(e) => handleImageUpload(e, 1)}
-		style="display: none;"
-		bind:this={uploaders[1]}
-	/>
-	<input
-		type="file"
-		accept="image/*"
-		bind:files={files[2]}
-		on:change={(e) => handleImageUpload(e, 2)}
-		style="display: none;"
-		bind:this={uploaders[2]}
-	/>
-	<input
-		type="file"
-		accept="image/*"
-		bind:files={files[3]}
-		on:change={(e) => handleImageUpload(e, 3)}
-		style="display: none;"
-		bind:this={uploaders[3]}
-	/>
-
 	<div class="card">
 		{#if !editing}
 			<div class="card-header">
@@ -139,17 +81,11 @@
 				</span>
 			</div>
 			<div class="players">
-				{#each team.players as player, i}
+				{#each team.players as player}
 					<div class="player">
-						<img
-							class="player-image image-edit"
-							src={player.image}
-							alt={player.name}
-							on:click={() => handleImageClick(i)}
-							on:keydown={(e) => e.key === 'Enter' && handleImageClick(i)}
-						/>
+						<img class="player-image" src={player.image} alt={player.name} />
 						<div class="player-name">
-							<input type="text" bind:value={player.name} />
+							{player.name}
 						</div>
 					</div>
 				{/each}
@@ -166,7 +102,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
 		border-radius: 8px;
 		box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
 		transition: background-color 0.2s ease-in-out;
@@ -177,7 +112,7 @@
 
 		user-select: none;
 		gap: 32px;
-		height: 300px;
+		min-height: 300px;
 		.card-header {
 			width: 100%;
 			display: flex;
@@ -231,22 +166,21 @@
 		}
 
 		.players {
+			display: grid;
+			grid-template-columns: repeat(2, calc(50% - 4px));
+			color: white;
+			gap: 8px;	
 			width: 100%;
-			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
-			justify-content: space-around;
-			gap: 8px;
-
 			.player {
 				display: flex;
 				align-items: center;
-				width: 40%;
 				gap: 8px;
-
+				width: 100%;
+				overflow: hidden;
 				.player-image {
 					width: 100px;
 					height: 100px;
+					aspect-ratio: 1/1;
 					border-radius: 8px;
 					&.image-edit {
 						cursor: pointer;
@@ -259,11 +193,13 @@
 				.player-name {
 					font-size: 16px;
 					font-weight: 500;
-					width: 100%;
+					width: 90%;
 					text-overflow: ellipsis;
-					overflow: hidden;
-					white-space: nowrap;
-
+					white-space: pre-wrap;
+					height: 100%;
+					display: flex;
+					align-items: center;
+					
 				}
 			}
 		}

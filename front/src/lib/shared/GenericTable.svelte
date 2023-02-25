@@ -1,19 +1,27 @@
 <script lang="ts">
-    import type { Event } from "$lib/models/event";
 	import TableArrow from "../../lib/shared/TableArrow.svelte";
-    export let events:Event[];
+    export let data:any[];
     let currentSort = '';
     let currentDirection:'desc'|'asc' = 'desc';
+    export let allowCreate = false;
+    export let create = () => {};
+    export let clickable = false;
+    export let onRowClick = (data:any) => {};
+    export let headers:{key:string, label:string, sortable?:boolean}[] = [];
+    export let displayData : {
+        key:any,
+        transform?:(value:any) => string,
+    }[] = [];
     const sortBy = (key:string) => {
         if(currentSort === key) {
-            events = events.reverse();
+            data = data.reverse();
             currentDirection = currentDirection === 'asc' ? 'desc' : 'asc';
             return;
         }else{
             currentDirection = 'desc';
         }
         currentSort = key;
-        events = events.sort((a,b) => {
+        data = data.sort((a,b) => {
                 if((a as any)[key] > (b as any)[key]) return -1;
                 if((a as any)[key] < (b as any)[key]) return 1;
                 return 0;
@@ -25,30 +33,33 @@
 <table>
     <thead>
         <tr>
-            <th class:active = {currentSort == "attacker_count"} on:click={() => sortBy("attacker_count")}>  <span> #Attacker        <TableArrow direction={currentDirection}  active={currentSort == "attacker_count" } /></span>   </th>
-            <th class:active = {currentSort == "victim_count"} on:click={() => sortBy("victim_count")}>    <span> #Victim          <TableArrow direction={currentDirection}  active={currentSort == "victim_count" } />  </span> </th>
-            <th class:active = {currentSort == "description"} on:click={() => sortBy("description")}>     <span> Description      <TableArrow direction={currentDirection}  active={currentSort == "description" } /> </span>  </th>
-            <th class:active = {currentSort == "direct_damage"} on:click={() => sortBy("direct_damage")}>   <span> Direct Damage    <TableArrow direction={currentDirection}  active={currentSort == "direct_damage" } /> </span>  </th>
-            <th class:active = {currentSort == "reflected_damage"} on:click={() => sortBy("reflected_damage")}><span> Reflected Damage <TableArrow direction={currentDirection}  active={currentSort == "reflected_damage" } /> </span>  </th>
-            <th class:active = {currentSort == "event_type"} on:click={() => sortBy("event_type")}>      <span> Event Type       <TableArrow direction={currentDirection}  active={currentSort == "event_type" } /> </span>  </th>
+            {#each headers as header}
+                {#if header.sortable}
+                    <th class:active = {currentSort == header.key} on:click={() => sortBy(header.key)}>  <span> {header.label}        <TableArrow direction={currentDirection}  active={currentSort == header.key } /></span>   </th>
+                {:else}
+                    <th class="unsortable"> {header.label} </th>
+                {/if}
+            {/each}
         </tr>
     </thead>
     <tbody>
-        {#each events as event}
-            <tr on:click={() => window.location.href = `/events/${event.id}`} on:keydown={(e) => { if(e.key === 'Enter') window.location.href = `/events/${event.id}`}}>
-                <td>{event.attacker_count}</td>
-                <td>{event.victim_count}</td>
-                <td>{event.description}</td>
-                <td>{event.direct_damage}</td>
-                <td>{event.reflected_damage}</td>
-                <td>{event.event_type}</td>
+        {#each data as value}
+            
+
+            <tr on:click={() => onRowClick(value)} on:keydown={(e) => { if(e.key === 'Enter') onRowClick(value)}} tabindex={clickable ? 0 : -1} class:clickable={clickable}>
+                {#each displayData as display}
+                    <td> 
+                        {@html  display.transform ? display.transform((value)[display.key]) : (value)[display.key]}
+                {/each}            
             </tr>
         {/each}
     </tbody>
 </table>
-<button class="add" on:click={() => window.location.href = `/events/new`}>
-    <span class="material-symbols-outlined">add</span>
-</button>
+{#if allowCreate}
+    <button class="add" on:click={create}>
+        <span class="material-symbols-outlined">add</span>
+    </button>
+{/if}
 
 
 <style lang="scss">
@@ -75,9 +86,12 @@
         &:nth-child(even){
             background-color: var(--background-color-light);
         }
-        cursor: pointer;
-        &:hover{
-            background-color: var(--highlight-color);
+      
+        &.clickable{
+            cursor: pointer;
+            &:hover{
+                background-color: var(--highlight-color);
+            }
         }
     }
 
@@ -86,6 +100,12 @@
             cursor: inherit;
             &:hover{
                 background-color: inherit;
+            }
+            .unsortable{
+                cursor: inherit;
+                &:hover{
+                    background-color: inherit;
+                }
             }
             background-color: var(--background-color-light);
             th{

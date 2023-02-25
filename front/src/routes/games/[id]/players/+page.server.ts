@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { DayInfo, Game, GameInfo } from '$lib/models/game';
-import type { Event, Status } from '$lib/models/event';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import type { Sponsor, Team } from '$lib/models/team';
-import type { GameSummary } from '$lib/models/summary';
 const url = process.env.API_URL;
 export const prerender = true;
 
@@ -46,6 +43,9 @@ const getTeams = async (token: string): Promise<Team[]> => {
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `${token}`
+		},
+		params: {
+			includePlayers: true
 		}
 	});
 	return data;

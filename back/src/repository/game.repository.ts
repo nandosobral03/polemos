@@ -10,10 +10,12 @@ const startGame = async (userId:string) =>{
     let id = uuid();
     await db.run(`INSERT INTO games (id, user_id, date, days, winner) VALUES (?, ?, ?, ?, ?)`, [id, userId, new Date().toISOString(), 0, '']);
     const players = (await db.all(`
-        SELECT players.id as id, players.team_id as team_id 
+        SELECT id, team_id
         FROM players
-        INNER JOIN teams ON teams.id = players.team_id
-        WHERE user_id = ?`, [userId]))
+        WHERE user_id = ? AND status = 'ACTIVE'
+    `, [userId]));
+
+
     const events = (await db.all(`SELECT * FROM events WHERE user_id = ?`, [userId]))
     const statuses = (await db.all(`SELECT * FROM status WHERE user_id = ?`, [userId]))
     const {days, all} = runGame(players, events, statuses);
@@ -346,7 +348,7 @@ const getPlayerStory = async ( gameId: string, playerId: string, userId:string )
     const db = await init();
     const gameInfo = await db.all(`
         SELECT
-            e.*, ge.players, gd.number
+            e.*, ge.players, gd.number, gd.current_players
         FROM game_day_events ge
         JOIN game_days gd ON gd.game_id = ge.game_id AND gd.number = ge.game_day_number
         JOIN games g ON g.id = ge.game_id
@@ -354,9 +356,12 @@ const getPlayerStory = async ( gameId: string, playerId: string, userId:string )
         WHERE g.id = ?
         AND g.user_id = ?
         AND ge.players LIKE ?`, gameId, userId, `%${playerId}%`);
-
     gameInfo.forEach(event => {
         event.players = JSON.parse(event.players);
+    });
+    gameInfo.forEach(event => {
+        event.current_players = JSON.parse(event.current_players);
+        event.current_players = event.current_players.filter((player:any) => event.players.some((p:string) => p === player.id));
     });
 
     return gameInfo;

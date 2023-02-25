@@ -4,17 +4,12 @@
 	import { env } from '$lib/env';
 	import teamStore from '$lib/stores/team.store';
 	export let sponsors: Sponsor[];
-	let files: (FileList | null)[] = [null, null, null, null];
-	let uploaders: (HTMLElement | null)[] = [null, null, null, null];
 	let url = env.API_URL;
 	let team: Team = {
 		id: '',
 		name: '',
 		sponsor: sponsors[0].id,
-		players: [1, 2, 3, 4].map((i) => ({
-			name: '',
-			image: `${url}/static/default.png`
-		}))
+		players: []
 	};
     const dispatch = createEventDispatcher();
 
@@ -22,24 +17,8 @@
 		try {
 			verify();   
             const data = await teamStore.create(team);
-            for(let i = 0; i < team.players.length; i++) {
-                const player = team.players[i];
-                if(player.image?.startsWith("data:image")){
-                    console.log(i, files[i])
-                    let fileList = files[i];
-                    const file = fileList?.item(0);
-                    if(file) {
-                        await teamStore.updatePlayerImage(data.team.players[i].id!, file);
-                    }
-                    console.log(fileList)
-                }
-            }
-            team.id = data.team.id;
-            team.players.forEach((e,i) => {
-                e.id = data.team.players[i].id;
-            });
-
-            dispatch('saved', team);
+			team.id = data.team.id;
+			dispatch('saved', team);
             reset();
 		} catch (e) {
             console.log(e);
@@ -56,71 +35,19 @@
                 image: `${url}/static/default.png`
             }))
         };
-        files = [null, null, null, null];
     }
 
 	const verify = () => {
-        if (team.name === '') {
-            throw new Error('Team name cannot be empty');
-        }
-        if (team.players.some((p) => p.name === '')) {
-            throw new Error('Player name cannot be empty');
-        }
+       
     };
 	const discard = () => {
 		reset();
         dispatch('discard');
     };
 
-	function handleImageUpload(e: Event, idx: number) {
-		const target = e.target as HTMLInputElement;
-		const file = target.files![0];
-		const reader = new FileReader();
-		reader.onload = (e) => {
-			const result = e.target?.result as string;
-			team.players[idx].image = result;
-		};
-		reader.readAsDataURL(file);
-	}
 
-	function handleImageClick(idx: number) {
-		const target = uploaders[idx];
-		target?.click();
-	}
 </script>
 
-<input
-	type="file"
-	accept="image/*"
-	bind:files={files[0]}
-	on:change={(e) => handleImageUpload(e, 0)}
-	style="display: none;"
-	bind:this={uploaders[0]}
-/>
-<input
-	type="file"
-	accept="image/*"
-	bind:files={files[1]}
-	on:change={(e) => handleImageUpload(e, 1)}
-	style="display: none;"
-	bind:this={uploaders[1]}
-/>
-<input
-	type="file"
-	accept="image/*"
-	bind:files={files[2]}
-	on:change={(e) => handleImageUpload(e, 2)}
-	style="display: none;"
-	bind:this={uploaders[2]}
-/>
-<input
-	type="file"
-	accept="image/*"
-	bind:files={files[3]}
-	on:change={(e) => handleImageUpload(e, 3)}
-	style="display: none;"
-	bind:this={uploaders[3]}
-/>
 
 <div class="card">
 	<div class="card-header">
@@ -139,22 +66,7 @@
 			<button on:click={discard}><span class="material-symbols-outlined">close</span></button>
 		</span>
 	</div>
-	<div class="players">
-		{#each team.players as player, i}
-			<div class="player">
-				<img
-					class="player-image image-edit"
-					src={player.image}
-					alt={player.name}
-					on:click={() => handleImageClick(i)}
-					on:keydown={(e) => e.key === 'Enter' && handleImageClick(i)}
-				/>
-				<div class="player-name">
-					<input type="text" bind:value={player.name} placeholder="Player Name" />
-				</div>
-			</div>
-		{/each}
-	</div>
+	
 </div>
 
 <style lang="scss">
@@ -165,7 +77,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
 		border-radius: 8px;
 		box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
 		transition: background-color 0.2s ease-in-out;

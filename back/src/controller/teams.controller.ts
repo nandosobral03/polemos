@@ -4,8 +4,9 @@ import repo from '../repository/teams.repository';
 
 export const getTeams = async (req: Request, res: Response) => {
     try{
+    const includePlayers = req.query.includePlayers === 'true';
     const user = getAuthUser(req);
-    const teams = await repo.getTeams(user);
+    const teams = await repo.getTeams(user, includePlayers);
     res.status(200).json(teams);
         }
         catch(err) {
@@ -28,7 +29,6 @@ export const createTeam = async (req: Request, res: Response) => {
         const error = formatHttpError(err);
         res.status(error.status).send(error.message);
     }  
-
 }
 
 export const updateTeam = async (req: Request, res: Response) => {

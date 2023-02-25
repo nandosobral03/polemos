@@ -1,4 +1,4 @@
-import type { Sponsor, Team } from '$lib/models/team';
+import type { Player, Sponsor, Team } from '$lib/models/team';
 import axios from 'axios';
 import dotenv from 'dotenv';
 const url = process.env.API_URL;
@@ -9,8 +9,7 @@ export async function load() {
     dotenv.config();
     const token = await login();
     return {
-        roaster: await getTeams(token),
-        sponsors: await getSponsors(token)
+        players: await getPlayer(token)
     };
 }
 
@@ -25,22 +24,8 @@ const login = async () : Promise<string> => {
     return data.token;
 }
 
-
-const getTeams = async (token:string) : Promise<Team[]> =>{
-    const {data} = await axios.get(`${url}/teams`,{
-        headers: {
-            'Content-Type': 'application/json',
-            "Authorization": `${token}`
-        },
-        params:{
-            "includePlayers": "true"
-        }
-    });
-    return data;
-}
-
-const getSponsors = async (token:string) : Promise<Sponsor[]> =>{
-    const {data} = await axios.get(`${url}/sponsors`,{
+const getPlayer = async (token:string) : Promise<Player[]> =>{
+    const {data} = await axios.get(`${url}/players`,{
         headers: {
             'Content-Type': 'application/json',
             "Authorization": `${token}`

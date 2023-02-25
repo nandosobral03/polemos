@@ -69,6 +69,9 @@ const getTeams = async (token:string) : Promise<Team[]> =>{
         headers: {
             'Content-Type': 'application/json',
             "Authorization": `${token}`
+        },
+        params: {
+            includePlayers: "true"
         }
     });
     return data;

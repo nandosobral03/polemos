@@ -1,17 +1,15 @@
 import { Request, Response } from 'express';
-import { compressImage, formatHttpError } from '../utils';
+import { formatHttpError, getAuthUser } from '../utils';
 import repo from '../repository/players.repository';
-import path from 'path';
-import fs from 'fs';
 
 
-export const addPlayer = async (req: Request, res: Response) => {
+export const createPlayer = async (req: Request, res: Response) => {
     try{
-    const { teamId } = req.params;
-    const  sponsor = await repo.addPlayer(teamId, req.body);
+    const user = getAuthUser(req);
+    const  player = await repo.createPlayer(req.body, user);
     res.status(200).json({
         message: "Player added",
-        sponsor
+        player
     });
     }
     catch(err){
@@ -22,7 +20,8 @@ export const addPlayer = async (req: Request, res: Response) => {
 
 export const deletePlayer = async (req: Request, res: Response) => {
     try{
-    await repo.deletePlayer(req.params.id);
+    const user = getAuthUser(req);  
+    await repo.deletePlayer(req.params.id, user);
     res.status(200).json({
         message: "Player deleted",
     });
@@ -35,6 +34,7 @@ export const deletePlayer = async (req: Request, res: Response) => {
 
 export const updatePlayerImage = async (req: Request, res: Response) => {
     try{
+    const user = getAuthUser(req);
     let { id } = req.params;
     if(!req.files){
         throw {
@@ -56,7 +56,7 @@ export const updatePlayerImage = async (req: Request, res: Response) => {
    
 
     
-    await repo.updatePlayerImage(id, image);
+    await repo.updatePlayerImage(id, image, user);
     res.status(200).json({
         message: "Player image updated",
     });
@@ -69,10 +69,36 @@ export const updatePlayerImage = async (req: Request, res: Response) => {
 
 export const updatePlayer = async (req: Request, res: Response) => {
     try{
-    await repo.updatePlayer(req.params.id, req.body);
+    const user = getAuthUser(req);
+    await repo.updatePlayer(req.params.id, req.body,user);
     res.status(200).json({
         message: "Player updated",
     });
+    }
+    catch(err){
+        const error = formatHttpError(err);
+        res.status(error.status).send(error.message);
+    }
+}
+
+export const  getPlayers = async (req: Request, res: Response) => {
+    try{
+    const user = getAuthUser(req);
+    const all = req.query.all === "true";
+    const players = await repo.getPlayers(user, all);
+    res.status(200).json(players);
+    }
+    catch(err){
+        const error = formatHttpError(err);
+        res.status(error.status).send(error.message);
+    }
+}
+
+export const getPlayer = async (req: Request, res: Response) => {
+    try{
+    const user = getAuthUser(req);
+    const player = await repo.getPlayer(req.params.id, user);
+    res.status(200).json(player);
     }
     catch(err){
         const error = formatHttpError(err);

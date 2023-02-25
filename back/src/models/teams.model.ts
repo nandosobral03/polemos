@@ -10,6 +10,7 @@ export interface Player {
     id?: string;
     name: string;
     image: string;
+    team_id: string;
 }
 
 export const isTeam = (team: Team): {correct:boolean, structure: any} => {

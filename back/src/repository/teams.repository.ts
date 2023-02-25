@@ -2,22 +2,27 @@ import { init } from "../db";
 import { Team } from "../models/teams.model";
 import { v4 as uuid } from "uuid";
 
-const getTeams = async (userid: string) => {
+const getTeams = async (userid: string, includePlayers: boolean = false) => {
     const db = await init();
     const teams = await db.all(`
         SELECT teams.id AS id, teams.name AS name, teams.sponsor AS sponsor
         FROM teams
         WHERE teams.user_id = ?
     `, [userid]);
-
-    for (let team of teams) {
-        let players = await db.all(`
-            SELECT players.id AS id, players.name AS name, players.image AS image
-            FROM players, teams
-            WHERE players.team_id = teams.id
-            AND teams.id = ?
-        `, [team.id]);
-        team.players = players;
+    if (includePlayers){
+        for (let team of teams) {
+            let players = await db.all(`
+                SELECT players.id AS id, players.name AS name, players.image AS image
+                FROM players, teams
+                WHERE players.team_id = teams.id
+                AND teams.id = ?
+            `, [team.id]);
+            team.players = players;
+        }
+    }else{
+        teams.map(team => {
+            team.players = undefined;
+        })
     }
     return teams;
 }

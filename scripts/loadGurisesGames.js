@@ -69,17 +69,10 @@ const loadTeams = async (token, sponsors) => {
     for(let player of _teams){
        const team = teams.find(team => team.name === player.team)
        await downloadImage(player.img, player.id);
-        if(team){
-            team.players.push({
-                name: player.name,
-            })
-       }else{
+        if(!team){
             teams.push({
             name: player.team,
             sponsor: sponsors.find(sponsor => sponsor.teams.includes(player.teamId)).id,
-            players: [{
-                    name: player.name
-                }]
             })
        }
     }
@@ -103,14 +96,39 @@ const loadTeams = async (token, sponsors) => {
         }
     });
 
+
+    const players = [];
     for(let player of _teams){
         const team = teamsResp.data.find(team => team.name === player.team);
-        let newId = (team.players.find(p => p.name === player.name)).id;
+        const playerBody = {
+            name: player.name,
+            team_id: team.id,
+        }
+        try{
+            const resp = await axios.post('http://localhost:3000/players', playerBody, {
+                headers: {
+                    Authorization: `${token}`
+                }
+            })
+            players.push({
+                ...player,
+                newId: resp.data.player.id
+            })
+            console.log(`Player ${player.name} created`);
+        }
+        catch(err){
+            console.log('Error creating player', err);
+        }
+    }
+
+
+
+    for(let player of players){
         try{
             // form data
             const formData = new FormData();
             formData.append('image', fs.createReadStream(path.join(__dirname, `./images/${player.id}.png`)));
-            const resp = await axios.put(`http://localhost:3000/players/image/${newId}`, formData, {
+            const resp = await axios.put(`http://localhost:3000/players/image/${player.newId}`, formData, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'multipart/form-data'

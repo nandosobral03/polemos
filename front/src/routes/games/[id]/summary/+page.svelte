@@ -53,7 +53,7 @@
         }
 
        img{
-              width: 300px;
+              width: 150px;
               aspect-ratio: 1/1;
               border-radius: 16px;
               box-shadow: 0 0 10px 0 var(--highlight-color);
@@ -81,7 +81,7 @@
            
 
             img{
-                width: 150px;
+                width: 100px;
                 aspect-ratio: 1/1;
                 box-shadow: 0 0 10px 0 var(--red-color);
                 &:hover{
