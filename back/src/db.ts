@@ -139,8 +139,16 @@ export const runMigrations = async () => {
             PRIMARY KEY (event_id, game_day_number, game_id)
         )`)
 
+    await db.exec(`CREATE TABLE IF NOT EXISTS game_players(
+            player_id TEXT NOT NULL,
+            game_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            FOREIGN KEY (player_id) REFERENCES players (id),
+            FOREIGN KEY (game_id) REFERENCES games (id) ON DELETE CASCADE,
+            PRIMARY KEY (player_id, game_id)
+        )`)
 
-
+        
     return db
 }
 

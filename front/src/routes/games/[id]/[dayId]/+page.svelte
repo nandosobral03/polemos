@@ -36,17 +36,6 @@
 		return message;
 	};
 
-	for (let player of players) {
-		if (player.status) {
-			if (player.status != '1') {
-				console.log(player);
-			}
-			if (player.status != player.previousStatus) {
-				console.log(player);
-			}
-		}
-	}
-
 	const getStatus = (id: string) => {
 		if (id === '1') return 'Normal';
 		return statuses.find((status) => status.id === id)?.name;

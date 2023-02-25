@@ -50,7 +50,7 @@ const startGame = async (userId:string) =>{
     
     setTimeout(
         async () => {
-            await recordStats(userId, days.length, JSON.parse(JSON.stringify(all)) || []);
+            await recordStats(userId, days.length, JSON.parse(JSON.stringify(all)) || [],id);
         }, 1000
     )
     const summariedPlayers = all?.map((player:any) => {return{
@@ -68,7 +68,7 @@ const startGame = async (userId:string) =>{
 }
 
 
-const recordStats = async (userId:string, length:number, all:GamePlayer[]) => {
+const recordStats = async (userId:string, length:number, all:GamePlayer[],id :string) => {
     const db = await init();
     await db.run(`UPDATE global_stats SET value = value + 1 WHERE user_id = ? AND type = 'total_games'`, [userId]);
     const longest_game = await db.get(`SELECT value FROM global_stats WHERE user_id = ? AND type = 'longest_game'`, [userId]);
@@ -92,6 +92,9 @@ const recordStats = async (userId:string, length:number, all:GamePlayer[]) => {
         }else{
             await db.run(`UPDATE player_stats SET total_kills = total_kills + ?, total_deaths = total_deaths + ? WHERE user_id = ? AND player_id = ?`, [player.kills, 1, userId, player.id]);
         }
+
+        await db.run('INSERT INTO game_players (game_id, player_id, user_id) VALUES (?, ?, ?)', [id, player.id, userId]);
+
     }
     console.log("Recorded stats")
 }
@@ -360,5 +363,15 @@ const getPlayerStory = async ( gameId: string, playerId: string, userId:string )
 
 }
 
+const getGamePlayers = async ( gameId: string, userId: string ) => {
+    const db = await init();
+    const players = await db.all(`
+        SELECT
+            player_id as id
+        FROM game_players
+        WHERE game_id = ? AND user_id = ?`, gameId, userId);
+    return players;
+}
 
-export default { startGame, getDay, getGames, getGameInfo, getGameSummary, getPlayerStory }
+
+export default { startGame, getDay, getGames, getGameInfo, getGameSummary, getPlayerStory, getGamePlayers }

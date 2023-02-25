@@ -68,3 +68,14 @@ export const getPlayerStory = async (req: Request, res: Response) => {
     res.status(error.status).send(error.message);
   }
 }
+
+export const getGamePlayers = async (req: Request, res: Response) => {
+  try{
+    const user = getAuthUser(req);
+    const players = await repo.getGamePlayers(req.params.id, user);
+    res.status(200).json(players);
+  } catch (err) {
+    const error = formatHttpError(err);
+    res.status(error.status).send(error.message);
+  }
+}
