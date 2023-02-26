@@ -7,9 +7,7 @@
     export let data : PageServerData;
     let adding = false;
     let changed = false;
-    onMount(async () => {
-        console.log(data);
-    });
+
 </script>
     
     <div class="teams">
@@ -55,7 +53,7 @@
     }
 
     button{
-        background-color: var(--background-color);
+        background-color: var(--background-color-light);
 		padding: 16px;
 		width: 90%;
 		display: flex;
@@ -76,8 +74,7 @@
 
         cursor: pointer;
         &:hover{
-            background-color: var(--highlight-color);
-            color: var(--background-color);
+            background-color: var(--background-color);
         }
 
 

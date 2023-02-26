@@ -24,6 +24,12 @@ export const runMigrations = async () => {
         `
     )
     
+    await db.exec(`CREATE TABLE IF NOT EXISTS sponsors (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE)
+    `)
     await db.exec(`CREATE TABLE IF NOT EXISTS teams (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
@@ -44,12 +50,6 @@ export const runMigrations = async () => {
         FOREIGN KEY (team_id) REFERENCES teams (id) ON DELETE SET NULL
     )`)
 
-    await db.exec(`CREATE TABLE IF NOT EXISTS sponsors (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        user_id TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE)
-    `)
 
     await db.exec(`CREATE TABLE IF NOT EXISTS player_stats (
         player_id TEXT NOT NULL,

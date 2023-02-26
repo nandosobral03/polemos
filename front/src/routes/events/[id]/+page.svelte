@@ -9,9 +9,7 @@
 		.split('')
 		.sort(() => Math.random() - 0.5)
 		.join('');
-	onMount(async () => {
-		console.log(data);
-	});
+
 	$: status = statuses.find((status) => status.id === event.victim_status)!;
 
 	const createDescriptionHTML = () => {
@@ -180,6 +178,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 32px;
+		padding: 32px;
 	}
 
 	.info {

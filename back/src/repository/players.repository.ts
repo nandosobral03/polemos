@@ -29,9 +29,9 @@ const deletePlayer = async (id: string, user: string) => {
     const db = await init();
     await db.run(`
         UPDATE players
-        SET status = ?
+        SET status = ?, team_id = ?
         WHERE id = ? AND user_id = ?
-    `, ['DELETED', id, user]);
+    `, ['DELETED',null, id, user]);
     return;
 }
 

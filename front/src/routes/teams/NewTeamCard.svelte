@@ -21,7 +21,6 @@
 			dispatch('saved', team);
             reset();
 		} catch (e) {
-            console.log(e);
         }
 	};
 
@@ -71,7 +70,7 @@
 
 <style lang="scss">
 	.card {
-		background-color: var(--background-color);
+		background-color: var(--background-color-light);
 		padding: 16px;
 		width: 90%;
 		display: flex;
@@ -81,7 +80,7 @@
 		box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
 		transition: background-color 0.2s ease-in-out;
 		&:hover{
-			background-color: var(--background-color-light);
+			background-color: var(--background-color);
 		}
 
 
@@ -104,7 +103,7 @@
 			.sponsor {
 				font-size: 16px;
 				width: fit-content;
-				background-color: var(--red-color);
+				background-color: var(--background-color);
 				padding: 8px;
 				border-radius: 8px;
 				select {
@@ -137,38 +136,6 @@
 			}
 		}
 
-		.players {
-			width: 100%;
-			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
-			justify-content: space-around;
-			gap: 8px;
-
-			.player {
-				display: flex;
-				align-items: center;
-				width: 40%;
-				gap: 8px;
-
-				.player-image {
-					width: 100px;
-					height: 100px;
-					border-radius: 8px;
-					&.image-edit {
-						cursor: pointer;
-						&:hover {
-							filter: brightness(0.7);
-						}
-					}
-				}
-
-				.player-name {
-					font-size: 16px;
-					font-weight: 500;
-				}
-			}
-		}
 	}
 
 	input {

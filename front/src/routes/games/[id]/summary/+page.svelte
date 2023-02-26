@@ -1,10 +1,10 @@
 <script lang="ts">
     import type { PageServerData } from "./$types";
     export let data : PageServerData;
-    console.log(data);
 </script>
 
 <div class="wrapper">
+    {#if data.winner}
         <span >Winner</span>
         <img src={data.winner.image} alt={data.winner.name} />
         <div class="winner">
@@ -13,7 +13,9 @@
                 From {data.winner.sponsor}'s {data.winner.team}    
             </span>
         </div>
-
+    {:else}
+        <span >Everyone died</span>
+    {/if}
         <div class="stats">
             <span >Most Kills</span>
             <div class="most-kills">
@@ -29,7 +31,6 @@
                 {/each}
             </div>
         </div>
-
     <button>
         <a href={`/games/${data.gameId}`}>Back to game</a>
     </button>
@@ -131,7 +132,7 @@
         padding: 8px;
         cursor: pointer;
         &:hover{
-            background-color: var(--red-color);
+            background-color: var(--background-color);
         }
         a{
             text-decoration: none;

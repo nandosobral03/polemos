@@ -2,11 +2,12 @@
     import { onMount } from "svelte";
     let active:string;
     const routes = [
-        {name: 'Teams', path: '/teams'},
+        {name: 'Sponsors', path: '/sponsors'},
         {name: 'Players', path: '/players'},
         {name: 'Events', path: '/events'},
-        {name: 'Play', path: '/play'},
+        {name: 'Teams', path: '/teams'},
         {name: 'Games', path: '/games'},
+        {name: 'Play', path: '/play'},
     ]
 
     onMount(() => {
@@ -17,38 +18,44 @@
 </script>
 
 <div class="sidebar">
+    <div class="logo">
+        <img src="/favicon.png" alt="logo" on:click={() => window.location.href = '/'} on:keydown={() => window.location.href = '/'}>
+    </div>
       {#each routes as route}
-        <div class="sidebar-item" on:click={() =>  window.location.href = route.path} class:active={active === route.name.toLowerCase()} on:keydown={() =>  window.location.href = route.path}>
+          <div class="sidebar-item" on:click={() =>  window.location.href = route.path} class:active={active === route.name.toLowerCase()} on:keydown={() =>  window.location.href = route.path}>
             {route.name}
         </div>
       {/each}
 </div>
 
 <style lang="scss">
-    .title{
-        font-size: 2em;
-        margin: 16px 0px;
-        font-weight: 900;
-        user-select: none;
-        display: flex;
-        justify-content: center;
-        cursor: pointer;
-    }
     .sidebar{
         color: var(--text-color);
         width: 10%;
         min-width: 200px;
-        background-image: linear-gradient(225deg, var(--background-color), var(--background-color-light) 50%, var(--background-color) 50%, var(--background-color-light));
+        background-color: #311d3f69;
         padding: 16px;
         gap: 8px;
         display: flex;
         flex-direction: column;
-        border-top-right-radius: 8px;
-        border-bottom-right-radius: 8px;
-        margin: 16px 0px;
+
+    }
+
+    .logo{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img{
+            width: 50%;
+            aspect-ratio: 1/1;
+            cursor: pointer;
+        }
+        margin-bottom: 16px;
     }
     .active{
-        background-color: var(--primary-color);
+        background-color: var(--background-color);
+        
     }
     .sidebar-item{
         padding: 16px;
@@ -57,10 +64,11 @@
         transition: all 0.2s ease-in-out;
         height: 16px;
         line-height: 16px;
-    }
-
-    .sidebar-item:hover{
-        background-color: var(--background-color);
-        transition: all 0.2s ease-in-out;
+        transition: 0.5s;
+        background-size: 200% auto;
+        &:hover{
+            background-color: var(--background-color-light);
+            transition: all 0.2s ease-in-out;
+        }
     }
 </style>

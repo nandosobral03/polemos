@@ -34,4 +34,14 @@ const deleteSponsor = async (userid: string, id: string) => {
     return;
 }
 
-export default { getSponsors, createSponsor, deleteSponsor };
+
+const updateSponsor = async (userid: string, id: string, name: string) => {
+    const db = await init();
+    await db.run(`
+        UPDATE sponsors
+        SET name = ?
+        WHERE user_id = ? AND id = ?
+    `, [name, userid, id]);
+}
+
+export default { getSponsors, createSponsor, deleteSponsor , updateSponsor };

@@ -214,7 +214,7 @@
 }
 
 .hex-brick {
-  background: var(--highlight-color);
+  background: var(--background-color);
   width: 30px;
   height: 17px;
   position: absolute;
@@ -388,10 +388,6 @@
   margin-top: 69px;
 }
 
-.c27 {
-  margin-left: -79px;
-  margin-top: -15px;
-}
 
 .c28 {
   margin-left: -95px;
@@ -532,7 +528,7 @@
   }
 
   50% {
-    background: var(--highlight-color);
+    background: var(--background-color);
   }
 
   100% {

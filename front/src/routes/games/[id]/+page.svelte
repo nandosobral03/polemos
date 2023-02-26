@@ -45,7 +45,7 @@
             justify-content: space-between;
             gap: 1rem;
             &:nth-child(odd){
-                background-color: var(--background-color);
+                background-color: var(--background-color-light);
             }
             cursor: pointer;
             &:hover{

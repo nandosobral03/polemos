@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { PageServerData } from "./$types";
     export let data : PageServerData;
-    console.log(data);
 
     const gotoPlayer = (id: string | undefined) => {
         window.location.href = `/games/${data.gameId}/players/${id}`;
@@ -40,7 +39,7 @@
         align-items: center;
         width: calc(100% - 32px);
         padding: 16px;
-        background-color: var(--background-color);
+        background-color: var(--background-color-light);
         border-radius: 8px;
         margin: 8px 0;
         gap: 1rem;
@@ -48,7 +47,6 @@
         cursor: pointer;
         &:hover{
             background-color: var(--highlight-color);
-            scale: 1.01;
         }
 
         img{

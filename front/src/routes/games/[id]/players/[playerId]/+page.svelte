@@ -1,31 +1,47 @@
 <script lang="ts">
-    import type { PageServerData } from "./$types";
+    import GameEvent from "$lib/shared/GameEvent.svelte";
+import type { PageServerData } from "./$types";
     export let data : PageServerData;
     const statuses = data.status;
-	const events = data.events;
+    const player = data.players.find((p) => p.id === data.playerId)!;
+	const events = data.events.map((event) => {
+        const {id,players,current_players, ...rest} = event;
+        return {
+            ...rest,
+            players: current_players.map(
+                (player) => {
+                    const playerData = data.players.find((p) => p.id === player.id)!;
+                    return {
+                        ...player,
+                        ...playerData,
+                    };
+                }
+            ),
+            id,
+            event_id: id,
+        };
+        } );
 
-    const getMessage = (dayEvent: any) => {
-		let event = events.find((event) => event.id === dayEvent.event_id)!;
-		let message = event.description;
-		for (let i = event.attacker_count + event.victim_count; i > 0; i--) {
-			message = message.replaceAll(`p${i}`, dayEvent.players[i - 1].name);
-		}
-		return message;
-	};
-
-	const getStatus = (id: string) => {
-		if (id === '1') return 'Normal';
-		return statuses.find((status) => status.id === id)?.name;
-	};
-
-	const getStatusColor = (id: string) => {
-		if (id === '1') return 'var(--text-color)';
-		return statuses.find((status) => status.id === id)?.color;
-	};
 </script>
 
 <div class="wrapper">
-     
+    <div class="events">
+		{#each events as event}
+			<GameEvent {event} {events} {statuses} />
+		{/each}
+        {#if data.isWinner}
+            <div class="winner">
+                <span>Winner</span>
+                <div class="player">
+                    <img src={player.image} alt={player.name} />
+                    <div class="info">
+                        <div class="name">{player.name}</div>
+                        <div class="team">{player.team}</div>
+                    </div>
+                </div>
+            </div>
+        {/if}
+	</div>
 </div>
 
 
@@ -40,40 +56,49 @@
         padding: 16px;
     }
 
-    .player{
+
+
+    .events{
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+        width: 100%;
+	}
+
+    .winner{
+        > span{
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--highlight-color);
+        }
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
-        width: calc(100% - 32px);
-        padding: 16px;
-        background-color: var(--background-color);
-        border-radius: 8px;
-        margin: 8px 0;
         gap: 1rem;
+        padding: 1rem;
+        background-color: var(--background-color-light);
+        border-radius: 8px;
         box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
-        cursor: pointer;
+        margin: 8px 0;
         &:hover{
-            background-color: var(--highlight-color);
-            scale: 1.01;
+            background-color: var(--background-color);
         }
 
         img{
-            width: 75px;
-            height: 75px;
+            width: 150px;
+            height: 150px;
             border-radius: 8px;
         }
-        .name{
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-        .team{
-            font-weight: 300;
-            color: var(--text-color);
+        .info{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            .name{
+                font-weight: 700;
+            }
         }
     }
-
-
-
    
 
 </style>

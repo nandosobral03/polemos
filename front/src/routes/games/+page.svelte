@@ -2,7 +2,6 @@
 	import GenericTable from "$lib/shared/GenericTable.svelte";
 import type { PageServerData } from "./$types";
     export let data : PageServerData;
-    console.log(data);
 </script>
 
     <GenericTable 

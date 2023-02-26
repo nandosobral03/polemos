@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Loader from "$lib/shared/Loader.svelte";
+	import Toast from "$lib/shared/Toast.svelte";
 	import { onMount } from "svelte";
 
 
@@ -21,7 +22,10 @@
     <div class="content">
         <slot />
     </div>
+    <Toast/>
 </main>
+
+
 
 <style lang="scss">
     main{
@@ -34,12 +38,12 @@
 
     .content{
       flex-grow: 1;
-      padding: 16px;
-      border-radius: 8px;
-      background-image: linear-gradient(225deg, var(--background-color), var(--background-color-light) 50%, var(--background-color) 50%, var(--background-color-light));
-      margin: 16px;
+      padding: 8px;
       color: var(--text-color);
+      background-color: #311d3f69;
       overflow-y: auto;
+      margin: clamp(8px, 1%, 12px);
+      border-radius: 8px;
     }
 
     .load{

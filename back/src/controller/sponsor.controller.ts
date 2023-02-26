@@ -43,3 +43,18 @@ export const deleteSponsor = async (req: Request, res: Response) => {
         res.status(error.status).send(error.message);
     }
 }   
+
+export const updateSponsor = async (req: Request, res: Response) => {
+    try{
+        const  user = getAuthUser(req);
+        const  sponsor = await repo.updateSponsor(user, req.params.id, req.body.name);
+        res.status(200).json({
+            message: "Sponsor updated",
+            sponsor
+        });
+    }
+    catch(err){
+        const error = formatHttpError(err);
+        res.status(error.status).send(error.message);
+    }
+}

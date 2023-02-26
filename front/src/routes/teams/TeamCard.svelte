@@ -96,7 +96,7 @@
 
 <style lang="scss">
 	.card {
-		background-color: var(--background-color);
+		background-color: var(--background-color-light);
 		padding: 16px;
 		width: 90%;
 		display: flex;
@@ -106,7 +106,7 @@
 		box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
 		transition: background-color 0.2s ease-in-out;
 		&:hover{
-			background-color: var(--background-color-light);
+			background-color: var(--background-color);
 		}
 
 
@@ -125,17 +125,21 @@
 			text-align: center;
 			.name {
 				flex-grow: 1;
-				color: var(--red-color);
+				color: var(--highlight-color);
 				font-weight: 300;
 			}
 
 			.sponsor {
 				font-size: 16px;
 				width: fit-content;
-				background-color: var(--red-color);
 				padding: 8px;
 				border-radius: 8px;
+				&:has(select){
+					background-color: var(--background-color);
+				}
+
 				select {
+					
 					width: 100%;
 					font-size: inherit;
 					font-weight: inherit;
@@ -182,12 +186,6 @@
 					height: 100px;
 					aspect-ratio: 1/1;
 					border-radius: 8px;
-					&.image-edit {
-						cursor: pointer;
-						&:hover {
-							filter: brightness(0.7);
-						}
-					}
 				}
 
 				.player-name {

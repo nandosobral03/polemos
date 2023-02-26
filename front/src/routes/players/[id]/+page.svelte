@@ -5,7 +5,6 @@
     export let data : PageServerData;
     data.player.team = data.player.team || "No team";
     let oldPlayer = JSON.parse(JSON.stringify(data.player)); // Deep copy of player object
-    console.log(data.player)
     let editing = false;
     let file: FileList|null = null;
     let uploader: HTMLInputElement | null = null;
@@ -16,7 +15,6 @@
     }
 
     const save = async () => {
-        console.log(data.player)
         await playersStore.update({
             ...data.player,
             image : undefined
@@ -77,7 +75,7 @@
     <div class="info">
         {#if editing}
             <input type="text" class="name" bind:value={data.player.name}>
-            <select class="team" bind:value={data.player.team_id} on:change={() => data.player.team = data.teams.find(team => team.id === data.player.team_id)?.name || "No team"}>
+            <select class="team" bind:value={data.player.team_id} on:change={() => data.player.team = data.teams.find(team => team.id === data.player.team_id)?.name || "No teamnpm"}>
                 <option value={null}>No team</option>
                 {#each data.teams as team}
                     <option value="{team.id}">{team.name}</option>
@@ -107,7 +105,7 @@
 <style lang="scss">
     .wrapper{
         position: relative;
-        padding: 16px;
+        padding: 32px;
         display: flex;
         flex-direction: row;
         gap: 1rem;

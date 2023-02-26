@@ -99,7 +99,7 @@
         tr{
             cursor: inherit;
             &:hover{
-                background-color: inherit;
+                background-color: var(--background-color-light);
             }
             .unsortable{
                 cursor: inherit;
@@ -108,9 +108,10 @@
                 }
             }
             background-color: var(--background-color-light);
+            
             th{
                 &:hover{
-                    background-color: var(--highlight-color);
+                    color: var(--red-color);
                 }
                 cursor: pointer;
                 span{
@@ -135,7 +136,7 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background-color: var(--red-color);
+        background-color: var(--background-color);
         border: none;
         color: white;
         font-size: 2rem;

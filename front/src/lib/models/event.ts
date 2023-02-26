@@ -19,3 +19,17 @@ export interface Status {
     health_increase: number;
     user_id: string;
 }
+
+export interface DayEvent {
+    players: {
+        id: string;
+        health: number;
+        status: string;
+        previousHealth: number;
+        previousStatus: string;
+        name: string;
+        image?: string | undefined;
+        team?: string | undefined;
+    }[];
+    event_id: string;
+}

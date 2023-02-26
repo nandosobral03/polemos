@@ -56,21 +56,18 @@
     }
 
     .play{
-        background-color: var(--highlight-color);
+        background-color: var(--background-color);
         border: none;
-        border-radius: 8px;
-        padding: 30px 80px;
+        border-radius: 16px;
+        padding: 60px 80px;
         font-size: 4rem;
         color: var(--text-color);
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease-in-out;
         &:hover{
-            transform: scale(1.05);
-            background-color: var(--primary-color);
-            box-shadow: 0 0 10px 0 var(--primary-color);
-
-
+            transform: scale(1.1);
+            box-shadow: 0 0 15px 5px var(--primary-color);
         }
     }
 
