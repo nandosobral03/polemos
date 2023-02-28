@@ -15,17 +15,25 @@
         active = path
     })
 
+    const logout = () => {
+        localStorage.removeItem('token')
+        window.location.href = '/login'
+    }
+
 </script>
 
 <div class="sidebar">
     <div class="logo">
-        <img src="/favicon.png" alt="logo" on:click={() => window.location.href = '/'} on:keydown={() => window.location.href = '/'}>
+        <img src="/favicon.png" alt="logo" on:click={() => window.location.href = '/home'} on:keydown={() => window.location.href = '/home'}>
     </div>
-      {#each routes as route}
+    {#each routes as route}
           <div class="sidebar-item" on:click={() =>  window.location.href = route.path} class:active={active === route.name.toLowerCase()} on:keydown={() =>  window.location.href = route.path}>
             {route.name}
         </div>
-      {/each}
+    {/each}
+    <div class="sidebar-item logout" on:click={logout} on:keydown={logout}>
+        Logout
+    </div>
 </div>
 
 <style lang="scss">
@@ -70,5 +78,9 @@
             background-color: var(--background-color-light);
             transition: all 0.2s ease-in-out;
         }
+    }
+
+    .logout{
+        margin-top: auto;
     }
 </style>

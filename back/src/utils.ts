@@ -68,3 +68,19 @@ export const compressImage = async (imageType:string, imageName:string) => {
         }
     }
 }
+
+
+export const deleteImage = (player_id: string) => {
+    const imageDir = path.join(__dirname, "images");
+    const compressedImagePath = path.join(imageDir, `compressed`);
+    const files = fs.readdirSync(imageDir);
+    const toRemove = files.filter((file: string) => file.startsWith(`${player_id}.`));
+    toRemove.forEach((file: any) => {
+        fs.removeFileSync(path.join(imageDir, file));
+    });
+    const filesCompressed = fs.readdirSync(compressedImagePath);
+    const toRemoveCompressed = filesCompressed.filter((file: string) => file.startsWith(`${player_id}.`));
+    toRemoveCompressed.forEach((file: any) => {
+        fs.removeFileSync(path.join(compressedImagePath, file));
+    });
+}

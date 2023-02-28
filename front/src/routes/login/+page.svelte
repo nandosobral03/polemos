@@ -11,6 +11,7 @@
     }
 
     const guestLogin = async () => {
+        console.log('guest login');
         const {token} = await userStore.guestLogin();
         localStorage.setItem('token', token);
         goto('/events');        
@@ -24,7 +25,7 @@
         <input type="text" placeholder="Username"  bind:value={username}>
         <input type="password" placeholder="Password"  bind:value={password}>
         <button type="button" on:click={login}>Login</button>
-        <button type="button" on:click={guestLogin} disabled>Play as guest</button>
+        <button type="button" on:click={guestLogin}>Play as guest</button>
     </div>
 </div>
 

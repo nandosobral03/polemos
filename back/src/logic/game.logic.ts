@@ -9,7 +9,10 @@ export const runGame = (players:(Player & { team_id: string })[], events:Event[]
     const allEvents = events.slice();
     const days = [];
     let day;
+    let dayNumber = 0;
     while(allPlayers.filter(a => a.health > 0).length > 1) {
+        dayNumber++;
+        console.log(`Day ${dayNumber}`, allPlayers.filter(a => a.health > 0).length);
         day = runDay(allPlayers, allEvents, statuses);
         days.push({
             current_players: day.all.map(player => 
@@ -47,6 +50,9 @@ const runDay = (_all:(GamePlayer &  { team_id:string })[], _events:Event[] , _st
             const atk = players.splice(0, event.attacker_count);
             const def = players.splice(0, event.victim_count);
             if(friendlyFire(atk, def)){
+                if(all.filter(a => a.health > 0).length < 5) {
+                    runEvent(event, atk, def, all, _statuses);
+                }
                 notPlayed.push(...atk, ...def);
                 if(++event.retries > 3){
                     break;

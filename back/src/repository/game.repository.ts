@@ -73,14 +73,15 @@ const recordStats = async (userId:string, length:number, all:GamePlayer[],id :st
     await db.run(`UPDATE global_stats SET value = value + 1 WHERE user_id = ? AND type = 'total_games'`, [userId]);
     const longest_game = await db.get(`SELECT value FROM global_stats WHERE user_id = ? AND type = 'longest_game'`, [userId]);
     const shortest_game = await db.get(`SELECT value FROM global_stats WHERE user_id = ? AND type = 'shortest_game'`, [userId]);
+    if(longest_game && shortest_game){
     if(length > longest_game.value) {
-        await db.run(`UPDATE global_stats SET value = ? WHERE user_id = ? AND type = 'longest_game'`, [length, userId]);
-    }
+            await db.run(`UPDATE global_stats SET value = ? WHERE user_id = ? AND type = 'longest_game'`, [length, userId]);
+        }
 
-    if(length < shortest_game.value) {
-        await db.run(`UPDATE global_stats SET value = ? WHERE user_id = ? AND type = 'shortest_game'`, [length, userId]);
+        if(length < shortest_game.value) {
+            await db.run(`UPDATE global_stats SET value = ? WHERE user_id = ? AND type = 'shortest_game'`, [length, userId]);
+        }
     }
-
     for(let player of all){
         const hasStats = await db.get(`SELECT * FROM player_stats WHERE user_id = ? AND player_id = ?`, [userId, player.id]);
         if(!hasStats) {

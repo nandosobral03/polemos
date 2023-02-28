@@ -11,6 +11,7 @@ import statusRoutes from './routes/status.routes';
 import eventRoutes from './routes/events.routes';
 import gameRoutes from './routes/game.routes';
 import statRoutes from './routes/stats.routes';
+import usersRoutes from './routes/user.routes';
 
 const initialize = async () => {
     const app = express();
@@ -30,6 +31,7 @@ const initialize = async () => {
     app.use('/events', authentication.verifyJWT, eventRoutes);
     app.use('/game', authentication.verifyJWT, gameRoutes);
     app.use('/stats', authentication.verifyJWT, statRoutes);
+    app.use('/users', usersRoutes)
     
     app.listen(process.env.PORT, () => {
         console.log(`Ares running on ${process.env.URL}!`);
