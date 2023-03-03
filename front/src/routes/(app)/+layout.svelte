@@ -3,25 +3,38 @@
 	import Toast from "$lib/shared/Toast.svelte";
 	import Sidebar from "$lib/shared/Sidebar.svelte";
 	import { onMount } from "svelte";
-
-
+	import { browser } from "$app/environment";
+  let width = 1200;
   let loading = true;
+  if(browser){
+    width = window ? window.innerWidth : 0;
+    window?.addEventListener("resize", () => {
+      width = window.innerWidth;
+    });
+  }
+
 
   onMount(() => {
     loading = false;
+
   });
 
 </script>
 <main>
-  <!-- {#if loading}
-  <div class="load">
-    <Loader style="no"/>
-  </div> -->
-  <!-- {/if} -->
-  <Sidebar />
+  {#if loading}
+    <div class="load">
+      <Loader/>
+    </div>
+  {:else}
+  {#if width > 768}
+    <Sidebar/>
+  {:else}
+    <Sidebar mobile={true}/>
+  {/if}
   <div class="content">
       <slot />
   </div>
+  {/if}
   <Toast/>
 </main>
 

@@ -2,12 +2,24 @@
 	import type { PageData } from "./$types";
     import playersStore from "$lib/stores/players.store";
 	import teamStore from "$lib/stores/team.store";
+	import { browser } from "$app/environment";
     export let data : PageData;
     data.player.team = data.player.team || "No team";
     let oldPlayer = JSON.parse(JSON.stringify(data.player)); // Deep copy of player object
     let editing = false;
     let file: FileList|null = null;
     let uploader: HTMLInputElement | null = null;
+    let mobile = false;
+    let width = 1200;
+    $ : mobile = width < 768;
+    if(browser){
+        width = window ? window.innerWidth : 0;
+        window?.addEventListener("resize", () => {
+        width = window.innerWidth;
+        });
+    }
+
+
 
     const discard = async () => {
         data.player = oldPlayer;
@@ -56,7 +68,7 @@
 		bind:this={uploader}
 	/>
 
-<div class="wrapper">
+<div class="wrapper" class:mobile={mobile}>
     <div class="actions"> 
         {#if !editing}
             <button on:click={() => editing = !editing}><span class="material-symbols-outlined">edit</span></button>
@@ -114,12 +126,21 @@
             height: 200px;
             border-radius: 50%;
         }
+        &.mobile{
+            flex-direction: column;
+            align-items: center;
+            img{
+                width: 100px;
+                height: 100px;
+            }
+        }
     }
 
     .info{
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        max-width: 100%;
         .name{
             font-size: 2rem;
             font-weight: bold;
@@ -138,6 +159,7 @@
         color: var(--text-color);
         font-size: 1.5rem;
         font-weight: bold;
+        width: 100%;
         &:focus{
             outline: none;
         }

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import type { Sponsor, Team } from '$lib/models/team';
 	import teamStore from '$lib/stores/team.store';
 	import { createEventDispatcher, onMount } from 'svelte';
@@ -7,6 +8,18 @@
 	let editing = false;
 	let oldTeam: Team;
 	let deleted = false;
+	let mobile = false;
+    let width = 1200;
+    $ : mobile = width < 768;
+    if(browser){
+        width = window ? window.innerWidth : 0;
+        window?.addEventListener("resize", () => {
+        width = window.innerWidth;
+        });
+    }
+
+
+
 	onMount(() => {
 		oldTeam = JSON.parse(JSON.stringify(team));
 	});
@@ -49,7 +62,27 @@
 					>
 				</span>
 			</div>
-			<div class="players">
+		{:else}
+		<div class="card-header">
+			<span class="sponsor">
+				<select bind:value={team.sponsor}>
+					{#each sponsors as sponsor}
+						<option value={sponsor.id} selected={sponsor.id === team.sponsor}
+							>{sponsor.name}</option
+						>
+					{/each}
+				</select>
+			</span>
+			<span class="name">
+				<input type="text" bind:value={team.name} />
+			</span>
+			<span class="actions">
+				<button on:click={save}><span class="material-symbols-outlined">save</span></button>
+				<button on:click={discard}><span class="material-symbols-outlined">close</span></button>
+			</span>
+		</div>
+		{/if}
+			<div class="players" class:mobile={mobile}>
 				{#each team.players as player}
 					<div class="player">
 						<img class="player-image" src={player.image} alt={player.name} />
@@ -59,38 +92,6 @@
 					</div>
 				{/each}
 			</div>
-		{/if}
-
-		{#if editing}
-			<div class="card-header">
-				<span class="sponsor">
-					<select bind:value={team.sponsor}>
-						{#each sponsors as sponsor}
-							<option value={sponsor.id} selected={sponsor.id === team.sponsor}
-								>{sponsor.name}</option
-							>
-						{/each}
-					</select>
-				</span>
-				<span class="name">
-					<input type="text" bind:value={team.name} />
-				</span>
-				<span class="actions">
-					<button on:click={save}><span class="material-symbols-outlined">save</span></button>
-					<button on:click={discard}><span class="material-symbols-outlined">close</span></button>
-				</span>
-			</div>
-			<div class="players">
-				{#each team.players as player}
-					<div class="player">
-						<img class="player-image" src={player.image} alt={player.name} />
-						<div class="player-name">
-							{player.name}
-						</div>
-					</div>
-				{/each}
-			</div>
-		{/if}
 	</div>
 {/if}
 
@@ -175,6 +176,11 @@
 			color: white;
 			gap: 8px;	
 			width: 100%;
+
+			&.mobile{
+				grid-template-columns: repeat(1, calc(100% - 4px));
+			}
+
 			.player {
 				display: flex;
 				align-items: center;

@@ -13,6 +13,11 @@ const createStatus = async (userid:string, status: Status) => {
 const getStatuses = async (userid:string) => {
     const db = await init();
     const statuses = await db.all(`SELECT * FROM status WHERE user_id = ?`, [userid]);
+    if(statuses.some(status => status.id == "1")){
+        return statuses;
+    }
+    const normal = await db.get(`SELECT * FROM status WHERE id = 1`);
+    statuses.push(normal);
     return statuses;
 }
 
@@ -21,5 +26,10 @@ const deleteStatus = async (userid:string, id:string) => {
     await db.run(`DELETE FROM status WHERE id = ? AND user_id = ?`, [id, userid]);
 }
 
+const editStatus = async (userid:string, id:string, status:Status) => {
+    const db = await init();
+    const {name , color, health_increase, damage_reduction} = status;
+    await db.run(`UPDATE status SET name = ?, color = ?, health_increase = ?, damage_reduction = ? WHERE id = ? AND user_id = ?`, [name, color, health_increase, damage_reduction, id, userid]);
+}
 
-export default { createStatus , getStatuses, deleteStatus };
+export default { createStatus , getStatuses, deleteStatus , editStatus }

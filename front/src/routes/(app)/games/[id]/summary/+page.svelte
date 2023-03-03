@@ -1,6 +1,16 @@
 <script lang="ts">
+	import { browser } from "$app/environment";
     import type { PageData } from "./$types";
     export let data : PageData;
+    let mobile = false;
+    let width = 1200;
+    $ : mobile = width < 768;
+    if(browser){
+        width = window ? window.innerWidth : 0;
+        window?.addEventListener("resize", () => {
+        width = window.innerWidth;
+        });
+    }
 </script>
 
 <div class="wrapper">
@@ -18,7 +28,7 @@
     {/if}
         <div class="stats">
             <span >Most Kills</span>
-            <div class="most-kills">
+            <div class="most-kills" class:mobile={mobile}>
                 {#each data.mostKills as most}
                 <div class="winner">
                     <img src={most.image} alt={most.name} />
@@ -37,13 +47,14 @@
 </div>
 
 <style lang="scss">
+ 
     .wrapper{
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 1rem;
-        height: 100%;
+        min-height: 100%;
         *{
             user-select: none;
         }
@@ -108,6 +119,13 @@
                 font-size: 1rem;
                 font-weight: bold;
             }
+
+
+            &.mobile{
+                flex-direction: column;
+                gap: 1rem;
+            }
+
         }
     }
 
@@ -139,5 +157,7 @@
             color: var(--text-color);
         }
     }
+
+  
 
 </style>

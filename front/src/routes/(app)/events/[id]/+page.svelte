@@ -4,6 +4,8 @@
 
 	export let data: PageData;
 	const { event, statuses } = data;
+	console.log(statuses);
+	console.log(event);
 	let randomCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789'
 		.split('')
 		.sort(() => Math.random() - 0.5)

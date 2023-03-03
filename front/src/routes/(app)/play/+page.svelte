@@ -52,16 +52,17 @@
     .wrapper{
         display: grid;
         place-items: center;
-        height: 100%;
-        width: 100%;
+        height: calc(100% - 60px);
+        width: calc(100% - 60px);
         position: relative;
+        padding: 30px;
     }
 
     .play{
         background-color: var(--background-color);
         border: none;
         border-radius: 16px;
-        padding: 60px 80px;
+        padding: 32px 48px;
         font-size: 4rem;
         color: var(--text-color);
         font-weight: 600;
@@ -69,6 +70,7 @@
         transition: all 0.2s ease-in-out;
         &:hover{
             transform: scale(1.1);
+            background-color: var(--highlight-color);
             box-shadow: 0 0 15px 5px var(--primary-color);
         }
     }

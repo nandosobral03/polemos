@@ -36,3 +36,15 @@ export const deleteStatus = async (req: Request, res: Response) => {
     res.status(error.status).send(error.message);
   }
 };
+
+
+export const editStatus = async (req: Request, res: Response) => {
+  try {
+    const user = getAuthUser(req);
+    const status = await repo.editStatus(user,req.params.id, req.body);
+    res.status(200).json(status);
+  } catch (err) {
+    const error = formatHttpError(err);
+    res.status(error.status).send(error.message);
+  }
+}

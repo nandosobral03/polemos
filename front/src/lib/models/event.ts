@@ -17,7 +17,6 @@ export interface Status {
     color: string;
     damage_reduction: number;
     health_increase: number;
-    user_id: string;
 }
 
 export interface DayEvent {

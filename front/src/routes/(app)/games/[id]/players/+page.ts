@@ -15,7 +15,7 @@ export async function load({ params }: { params: { id: string } }) {
 		]);
 
 		return {
-			players,
+			players : players.sort((a, b) => (a.name.localeCompare(b.name))),
 			gameId: params.id
 		};
 	}
